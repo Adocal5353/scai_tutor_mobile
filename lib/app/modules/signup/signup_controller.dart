@@ -1,12 +1,67 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SignupController extends GetxController {
-  //TODO: Implement SignupController
+  final formKey = GlobalKey<FormState>();
 
-  final count = 0.obs;
+  // Text Controllers
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final etablissementController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  // Observables
   final RxString selectedProfile = ''.obs;
   final RxBool hasStudent = false.obs;
   final RxString selectedTime = ''.obs;
+  final RxnString niveau = RxnString();
+  final RxnString specialite = RxnString();
+  final RxnString selectedImagePath = RxnString();
+
+  // Listes de données pour apprenant
+  final List<String> niveauxEtude = [
+    'Primaire',
+    'Collège',
+    'Lycée',
+  ];
+
+  // Listes de données pour enseignant
+  final List<String> niveauxEnseignement = [
+    'Primaire',
+    'Collège',
+    'Lycée',
+  ];
+
+  final List<String> specialites = [
+    'Mathématiques',
+    'Physique',
+    'Histoire',
+    'Français',
+    'Anglais',
+    'Sciences',
+  ];
+
+  // Getters pour obtenir la bonne liste selon le profil
+  List<String> get niveaux {
+    if (selectedProfile.value == 'teacher') {
+      return niveauxEnseignement;
+    } else if (selectedProfile.value == 'learner') {
+      return niveauxEtude;
+    }
+    return [];
+  }
+
+  bool get showSpecialite => selectedProfile.value == 'teacher';
+
+  String get niveauLabel {
+    if (selectedProfile.value == 'teacher') {
+      return "Niveau d'enseignement";
+    } else if (selectedProfile.value == 'learner') {
+      return "Niveau d'étude";
+    }
+    return "Niveau";
+  }
 
   void selectTime(String value) {
     selectedTime.value = value;
@@ -14,10 +69,33 @@ class SignupController extends GetxController {
 
   void selectProfile(String value) {
     selectedProfile.value = value;
+    // Réinitialiser niveau et spécialité quand on change de profil
+    niveau.value = null;
+    specialite.value = null;
   }
 
   void toggleHasStudent(bool value) {
     hasStudent.value = value;
+  }
+
+  void selectNiveau(String? value) {
+    niveau.value = value;
+  }
+
+  void selectSpecialite(String? value) {
+    specialite.value = value;
+  }
+
+  void uploadPhoto() {
+    // TODO: Implémenter l'upload de photo
+    Get.snackbar('Info', 'Fonctionnalité de téléversement de photo à implémenter');
+  }
+
+  void createAccount() {
+    if (formKey.currentState!.validate()) {
+      // TODO: Implémenter la logique de création de compte
+      Get.snackbar('Succès', 'Compte créé avec succès');
+    }
   }
 
   @override
@@ -32,8 +110,11 @@ class SignupController extends GetxController {
 
   @override
   void onClose() {
+    nameController.dispose();
+    emailController.dispose();
+    etablissementController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.onClose();
   }
-
-  void increment() => count.value++;
 }
