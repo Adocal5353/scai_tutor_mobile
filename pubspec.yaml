@@ -43,6 +43,7 @@ dependencies:
   gpt_markdown: ^1.1.2
   permission_handler: ^11.0.1
   flutter_dotenv: ^6.0.0
+  getx_binding_annotation_generator: ^0.2.8
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/icons/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

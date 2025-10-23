@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/global_widgets/primary_button.dart';
+import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
 
 import 'landing_controller.dart';
 
@@ -58,7 +59,7 @@ class LandingView extends GetView<LandingController> {
                   PrimaryButton(
                     text: "Se connecter",
                     backgroundColor: Color.fromRGBO(16, 75, 191, 1),
-                    onPressed: () => Get.toNamed("/login"),
+                    onPressed: () => Get.toNamed(Routes.LOGIN),
                   ),
                   const SizedBox(height: 20),
                   PrimaryButton(
@@ -66,7 +67,7 @@ class LandingView extends GetView<LandingController> {
                     backgroundColor: Colors.white,
                     borderColor: Color.fromRGBO(16, 75, 191, 1),
                     textColor: Color.fromRGBO(16, 75, 191, 1),
-                    onPressed: () => Get.toNamed("/signup"),
+                    onPressed: () => Get.toNamed(Routes.SIGNUP),
                   ),
                 ],
               ),

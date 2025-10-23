@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/modules/signup/time_on_screen_view.dart';
+import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
 
 import 'signup_controller.dart';
 
@@ -80,22 +81,66 @@ class SignupView extends GetView<SignupController> {
                                 keyboardType: TextInputType.emailAddress,
                               ),
                               const SizedBox(height: 16),
+                              
+                              // Dropdown Niveau (conditionnel selon profil)
+                              Obx(() {
+                                if (controller.selectedProfile.value == 'learner' || 
+                                    controller.selectedProfile.value == 'teacher') {
+                                  return Column(
+                                    children: [
+                                      _buildDropdown(
+                                        label: controller.niveauLabel,
+                                        items: controller.niveaux,
+                                        value: controller.niveau.value,
+                                        onChanged: controller.selectNiveau,
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                              
+                              // Dropdown Spécialité (uniquement pour enseignant)
+                              Obx(() {
+                                if (controller.showSpecialite) {
+                                  return Column(
+                                    children: [
+                                      _buildDropdown(
+                                        label: "Spécialité",
+                                        items: controller.specialites,
+                                        value: controller.specialite.value,
+                                        onChanged: controller.selectSpecialite,
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                              
                               _buildInputField(
                                 label: "Etablissement",
                                 keyboardType: TextInputType.text,
                               ),
                               const SizedBox(height: 16),
-                              _buildInputField(
-                                label: "Téléphone",
-                                keyboardType: TextInputType.number,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildInputField(
-                                label: "Niveau d'étude",
-                                keyboardType: TextInputType.text,
-                              ),
-
-                              const SizedBox(height: 16),
+                              
+                              // Champ Téléphone (uniquement pour apprenant)
+                              Obx(() {
+                                if (controller.selectedProfile.value == 'learner') {
+                                  return Column(
+                                    children: [
+                                      _buildInputField(
+                                        label: "Téléphone",
+                                        keyboardType: TextInputType.phone,
+                                      ),
+                                      const SizedBox(height: 16),
+                                    ],
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              }),
+                              
                               _buildInputField(
                                 label: 'Mot de passe',
                                 isPassword: true,
@@ -152,7 +197,7 @@ class SignupView extends GetView<SignupController> {
                               Center(
                                 child: TextButton(
                                   onPressed: () {
-                                    Get.toNamed("/login");
+                                    Get.toNamed(Routes.LOGIN);
                                   },
                                   child: Text.rich(
                                     TextSpan(
@@ -286,6 +331,36 @@ class SignupView extends GetView<SignupController> {
           horizontal: 16.0,
           vertical: 14.0,
         ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String label,
+    required List<String> items,
+    required String? value,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+      child: DropdownButtonFormField<String>(
+        value: value,
+        hint: Text(label),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(vertical: 14.0),
+        ),
+        items: items
+            .map((e) => DropdownMenuItem(
+                  value: e,
+                  child: Text(e),
+                ))
+            .toList(),
+        onChanged: onChanged,
       ),
     );
   }
