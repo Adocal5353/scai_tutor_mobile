@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_pages.dart';
+import '../../data/services/user_service.dart';
+import '../../data/models/user.dart';
 
 class LoginController extends GetxController {
+  // Injection du UserService
+  final UserService _userService = Get.find<UserService>();
+
   // Text Controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -27,7 +32,7 @@ class LoginController extends GetxController {
     'parent@test.com': {
       'password': '123456',
       'role': 'parent',
-      'name': 'Junipr Parent',
+      'name': 'Junior Parent',
     },
   };
 
@@ -152,11 +157,21 @@ class LoginController extends GetxController {
   }
 
   /// Sauvegarder les données utilisateur 
-  void _saveUserData(Map<String, dynamic> user) {
-    // TODO: Utiliser GetStorage, SharedPreferences ou autre pour sauvegarder
-    // Exemple: GetStorage().write('user', user);
-    // Exemple: GetStorage().write('token', user['token']);
-    print('Utilisateur connecté: ${user['name']} (${user['role']})');
+  void _saveUserData(Map<String, dynamic> userData) {
+    // Créer un objet User à partir des données
+    final user = User(
+      id: userData['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      name: userData['name'],
+      email: userData['email'],
+      role: userData['role'],
+      token: userData['token'],
+      imageUrl: userData['imageUrl'] ?? '',
+    );
+
+    // Enregistrer dans le UserService (qui gérera aussi le stockage local)
+    _userService.setUser(user);
+    
+    print('Utilisateur connecté: ${user.name} (${user.role})');
   }
 
   /// Navigation selon le rôle utilisateur
@@ -166,12 +181,10 @@ class LoginController extends GetxController {
         Get.offAllNamed(Routes.DASHBOARD_STUDENT);
         break;
       case 'teacher':
-        // Get.offAllNamed(Routes.DASHBOARD_TEACHER);
-        Get.snackbar('Info', 'Navigation vers Dashboard Enseignant');
+        Get.offAllNamed(Routes.DASHBOARD_TEACHER);
         break;
       case 'parent':
-        // Get.offAllNamed(Routes.DASHBOARD_PARENT);
-        Get.snackbar('Info', 'Navigation vers Dashboard Parent');
+        Get.offAllNamed(Routes.PARENT_GUARDIAN);
         break;
       default:
         Get.snackbar('Erreur', 'Rôle utilisateur non reconnu');

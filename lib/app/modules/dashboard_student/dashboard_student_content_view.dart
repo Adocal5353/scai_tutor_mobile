@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scai_tutor_mobile/app/global_widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
+import '../../routes/app_pages.dart';
 
 class DashboardStudentContentView extends StatelessWidget {
   const DashboardStudentContentView({super.key});
@@ -71,27 +72,32 @@ class DashboardStudentContentView extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: SC_ThemeColors.lightBlue,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Evaluation générale",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed('/general-evaluation');
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: SC_ThemeColors.lightBlue,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Evaluation générale",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Icon(Icons.arrow_forward),
-                  ],
+                      SizedBox(width: 10),
+                      Icon(Icons.arrow_forward),
+                    ],
+                  ),
                 ),
               ),
               // Section Évaluation Générale

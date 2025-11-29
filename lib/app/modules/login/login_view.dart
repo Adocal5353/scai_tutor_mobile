@@ -46,7 +46,7 @@ class LoginView extends GetView<LoginController> {
                           ),
                           child: Image.asset('assets/images/app_logo.png'),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 21),
                         Text(
                           'CONNEXION',
                           style: TextStyle(

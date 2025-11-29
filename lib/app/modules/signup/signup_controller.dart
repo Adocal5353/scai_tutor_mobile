@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
 
 class SignupController extends GetxController {
   final formKey = GlobalKey<FormState>();
@@ -24,6 +25,7 @@ class SignupController extends GetxController {
     'Primaire',
     'Collège',
     'Lycée',
+    'Université',
   ];
 
   // Listes de données pour enseignant
@@ -31,6 +33,7 @@ class SignupController extends GetxController {
     'Primaire',
     'Collège',
     'Lycée',
+    'Université',
   ];
 
   final List<String> specialites = [
@@ -93,7 +96,14 @@ class SignupController extends GetxController {
 
   void createAccount() {
     if (formKey.currentState!.validate()) {
-      // TODO: Implémenter la logique de création de compte
+      // Navigation selon le profil sélectionné
+      if (selectedProfile.value == 'learner') {
+        Get.offAllNamed(Routes.DASHBOARD_STUDENT);
+      } else if (selectedProfile.value == 'teacher') {
+        Get.offAllNamed(Routes.DASHBOARD_TEACHER);
+      } else if (selectedProfile.value == 'parent') {
+        Get.offAllNamed(Routes.PARENT_GUARDIAN);
+      }
       Get.snackbar('Succès', 'Compte créé avec succès');
     }
   }
