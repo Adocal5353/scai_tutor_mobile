@@ -1,75 +1,121 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:scai_tutor_mobile/app/data/models/document_model.dart';
+import 'package:scai_tutor_mobile/app/data/providers/document_provider.dart';
+import 'package:scai_tutor_mobile/app/data/providers/api_provider.dart';
+import 'package:scai_tutor_mobile/app/data/services/user_service.dart';
 
 class RessourcesTeacherController extends GetxController
     with GetSingleTickerProviderStateMixin {
-  //TODO: Implement RessourcesTeacherController
+  final DocumentProvider _documentProvider = DocumentProvider(Get.find<ApiProvider>());
+  final UserService _userService = Get.find<UserService>();
 
-  final count = 0.obs;
   late TabController tabController;
-  
-  // Durée maximale autorisée pour une vidéo (en secondes)
-  static const int MAX_VIDEO_DURATION_SECONDS = 300; // 5 minutes
+  static const int MAX_VIDEO_DURATION_SECONDS = 300;
 
-  // Liste des documents avec dates
-  final List<Map<String, dynamic>> documents = [
-    {
-      'title': 'Doc_comprendre les suites arithmétiques',
-      'date': DateTime(2025, 5, 11),
-      'type': 'doc',
-      'icon': Icons.description_outlined,
-      'iconColor': const Color(0xFF2196F3), // Blue
-    },
-    {
-      'title': 'Corrigé de l\'examen nationnal.pdf',
-      'date': DateTime(2025, 5, 11),
-      'type': 'pdf',
-      'icon': Icons.picture_as_pdf,
-      'iconColor': const Color(0xFFF44336), // Red
-    },
-    {
-      'title': 'TD Mathématique Grand Lomé.pdf',
-      'date': DateTime.now().subtract(const Duration(days: 1)),
-      'type': 'pdf',
-      'icon': Icons.picture_as_pdf,
-      'iconColor': const Color(0xFFF44336), // Red
-    },
-  ];
+  final RxList<DocumentModel> allDocuments = <DocumentModel>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxString error = ''.obs;
 
-  // Liste des vidéos avec dates
-  final List<Map<String, dynamic>> videos = [
-    {
-      'title': 'Suites numériques en arithmétique',
-      'date': DateTime(2025, 5, 11),
+  List<Map<String, dynamic>> get documents => allDocuments
+    .where((doc) => doc.type != 'video')
+    .map((doc) => {
+      'title': doc.titre,
+      'date': DateTime.now(),
+      'type': doc.type,
+      'icon': _getIconForType(doc.type),
+      'iconColor': _getColorForType(doc.type),
+      'document': doc,
+    }).toList();
+
+  List<Map<String, dynamic>> get videos => allDocuments
+    .where((doc) => doc.type == 'video')
+    .map((doc) => {
+      'title': doc.titre,
+      'date': DateTime.now(),
       'thumbnail': 'assets/images/video1.jpg',
-      'duration': '2:45',
-      'watched': true,
-    },
-    {
-      'title': 'Enjeux de factorisation',
-      'date': DateTime.now(),
-      'thumbnail': 'assets/images/video2.jpg',
-      'duration': '4:32',
-      'watched': true,
-    },
-    {
-      'title': 'Introduction aux dérivées',
-      'date': DateTime.now(),
-      'thumbnail': 'assets/images/video3.jpg',
-      'duration': '3:20',
+      'duration': '0:00',
       'watched': false,
-    },
-  ];
+      'document': doc,
+    }).toList();
+
+  IconData _getIconForType(String type) {
+    switch (type.toLowerCase()) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'video':
+        return Icons.play_circle_outline;
+      default:
+        return Icons.description_outlined;
+    }
+  }
+
+  Color _getColorForType(String type) {
+    switch (type.toLowerCase()) {
+      case 'pdf':
+        return const Color(0xFFF44336);
+      case 'video':
+        return const Color(0xFF4CAF50);
+      default:
+        return const Color(0xFF2196F3);
+    }
+  }
 
   @override
   void onInit() {
     super.onInit();
     tabController = TabController(length: 2, vsync: this);
+    fetchDocuments();
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  Future<void> fetchDocuments() async {
+    try {
+      isLoading.value = true;
+      error.value = '';
+
+      final userId = _userService.user?.id;
+      if (userId == null) {
+        error.value = 'Utilisateur non connecte';
+        return;
+      }
+
+      final response = await _documentProvider.getAll(
+        params: {'id_enseignant': userId}
+      );
+
+      if (response.data != null) {
+        final List<dynamic> data = response.data is List 
+          ? response.data 
+          : (response.data['data'] ?? []);
+        
+        print('[RessourcesTeacher] Parsing ${data.length} documents...');
+        
+        allDocuments.value = data
+          .map((json) {
+            try {
+              final doc = DocumentModel.fromJson(json as Map<String, dynamic>);
+              print('[RessourcesTeacher] ✓ Parsed: ${doc.titre} (${doc.type})');
+              return doc;
+            } catch (e) {
+              print('[RessourcesTeacher] ✗ ERROR parsing document: $e');
+              print('[RessourcesTeacher] JSON was: $json');
+              rethrow;
+            }
+          })
+          .toList();
+        
+        print('[RessourcesTeacher] Loaded ${allDocuments.length} documents successfully');
+      }
+    } catch (e) {
+      error.value = e.toString();
+      Get.snackbar(
+        'Erreur',
+        'Impossible de charger les documents',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
@@ -77,8 +123,6 @@ class RessourcesTeacherController extends GetxController
     tabController.dispose();
     super.onClose();
   }
-
-  void increment() => count.value++;
 
   // Grouper les documents par date
   Map<String, List<Map<String, dynamic>>> getGroupedDocuments() {

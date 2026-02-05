@@ -102,27 +102,83 @@ class ClassTeacherView extends GetView<ClassTeacherController> {
                     // Grille des classes
                     Expanded(
                       child: Obx(
-                        () => GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 18,
-                            crossAxisSpacing: 18,
-                            childAspectRatio: 1.3, 
-                          ),
-                          itemCount: controller.classes.length,
-                          itemBuilder: (context, index) {
-                            final classe = controller.classes[index];
-                            return _buildClasseCard(
-                              matiere: classe['matiere']!,
-                              niveau: classe['niveau']!,
-                              index: index,
-                              onTap: () => controller.goToClasseDetails(
-                                classe['matiere']!,
-                                classe['niveau']!,
+                        () {
+                          if (controller.isLoading.value) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          
+                          if (controller.error.value.isNotEmpty) {
+                            return RefreshIndicator(
+                              onRefresh: controller.fetchClasses,
+                              child: SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.5,
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'Erreur: ${controller.error.value}',
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(color: Colors.red),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: controller.fetchClasses,
+                                          child: const Text('Réessayer'),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             );
-                          },
-                        ),
+                          }
+                          
+                          if (controller.classes.isEmpty) {
+                            return RefreshIndicator(
+                              onRefresh: controller.fetchClasses,
+                              child: SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: SizedBox(
+                                  height: MediaQuery.of(context).size.height * 0.5,
+                                  child: const Center(
+                                    child: Text(
+                                      'Aucune classe disponible',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          
+                          return RefreshIndicator(
+                            onRefresh: controller.fetchClasses,
+                            child: GridView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 18,
+                                crossAxisSpacing: 18,
+                                childAspectRatio: 1.3, 
+                              ),
+                              itemCount: controller.classes.length,
+                              itemBuilder: (context, index) {
+                                final classe = controller.classes[index];
+                                return _buildClasseCard(
+                                  matiere: classe.subject,
+                                  niveau: classe.level,
+                                  index: index,
+                                  onTap: () => controller.goToClasseDetails(classe),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       ),
                     ),
                       ],

@@ -170,7 +170,7 @@ class AddClassView extends GetView<AddClassController> {
                         const SizedBox(height: 30),
 
                         /// --- BOUTON CRÉER ---
-                        SizedBox(
+                        Obx(() => SizedBox(
                           width: double.infinity,
                           height: 55,
                           child: ElevatedButton(
@@ -180,17 +180,28 @@ class AddClassView extends GetView<AddClassController> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            onPressed: controller.createClass,
-                            child: const Text(
-                              "Créer",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
+                            onPressed: controller.isLoading.value 
+                                ? null 
+                                : controller.createClass,
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "Créer",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
-                        ),
+                        )),
 
                         const SizedBox(height: 20),
                       ],

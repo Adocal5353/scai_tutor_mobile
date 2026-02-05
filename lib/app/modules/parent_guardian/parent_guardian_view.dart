@@ -1,10 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
+import 'package:scai_tutor_mobile/app/modules/Household/household_view.dart';
+import 'package:scai_tutor_mobile/app/modules/profile/profile_view.dart';
 import 'parent_guardian_controller.dart';
 
 class ParentGuardianView extends GetView<ParentGuardianController> {
   const ParentGuardianView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Initialiser les pages ici pour éviter la dépendance circulaire
+    if (controller.pages.isEmpty) {
+      controller.pages = [
+        const ParentGuardianContentView(),
+        const HouseholdView(),
+        const ProfileView(),
+      ];
+    }
+    
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Obx(() => controller.pages[controller.currentIndex.value]),
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          currentIndex: controller.currentIndex.value,
+          onTap: controller.changeTab,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: SC_ThemeColors.darkBlue,
+          unselectedItemColor: Colors.grey[600],
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Accueil'),
+            BottomNavigationBarItem(icon: Icon(Icons.family_restroom), label: 'Foyer'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ParentGuardianContentView extends GetView<ParentGuardianController> {
+  const ParentGuardianContentView({super.key});
 
   @override
   Widget build(BuildContext context) {

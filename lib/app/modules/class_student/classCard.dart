@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:scai_tutor_mobile/app/data/models/Classe.dart';
 
 class Classcard extends StatelessWidget {
@@ -59,7 +58,7 @@ class Classcard extends StatelessWidget {
                         children: [
                           TextSpan(text: '${classe.level}   '),
                           TextSpan(
-                            text: '${classe.teacher.name}',
+                            text: classe.teacher.name ?? 'Enseignant',
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],

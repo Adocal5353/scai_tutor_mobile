@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:scai_tutor_mobile/app/data/models/Classe.dart';
 import 'package:scai_tutor_mobile/app/modules/class_student/classCard.dart';
 import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
 
@@ -70,21 +68,45 @@ class ClassStudentView extends StatelessWidget {
                     const SizedBox(height: 30),
                     // Liste des classes
                     Expanded(
-                      child: Obx(
-                        () => ListView.separated(
+                      child: Obx(() {
+                        if (controller.isLoading.value) {
+                          return const Center(
+                            child: CircularProgressIndicator(color: Colors.white),
+                          );
+                        }
+                        
+                        if (controller.error.value.isNotEmpty) {
+                          return Center(
+                            child: Text(
+                              'Erreur: ${controller.error.value}',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
+                        
+                        if (controller.classes.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'Aucune classe disponible',
+                              style: TextStyle(color: Colors.white, fontSize: 16),
+                            ),
+                          );
+                        }
+                        
+                        return ListView.separated(
                           itemCount: controller.classes.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 20),
                           itemBuilder: (context, index) {
                             final classe = controller.classes[index];
                             return Classcard(
-                              classe: classe['classe'] as Classe,
-                              color: classe['color'] as Color,
-                              icon: classe['icon'] as IconData,
+                              classe: classe['classe'],
+                              color: classe['color'],
+                              icon: classe['icon'],
                             );
                           },
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ],
                 ),

@@ -56,174 +56,160 @@ class HouseholdView extends GetView<HouseholdController> {
               /// --- SCROLLABLE CONTENT ---
               Expanded(
                 child: Obx(
-                  () => SingleChildScrollView(
+                  () => controller.isLoading.value
+                      ? const Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// --- FIRST CHILD (Expandable) ---
-                        if (controller.children.isNotEmpty)
-                          GestureDetector(
-                            onTap: () => controller.toggleChild(0),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(15),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade300),
-                                color: Colors.white,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 50,
-                                        height: 50,
-                                        padding: const EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade200,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Image.asset(
-                                          controller.children[0]['avatar'],
-                                          fit: BoxFit.contain,
-                                        ),
+                        /// --- LIST OF APPRENANTS ---
+                        if (controller.apprenants.isNotEmpty)
+                          ...List.generate(
+                            controller.apprenants.length,
+                            (index) {
+                              final apprenant = controller.apprenants[index];
+                              final isExpanded = controller.selectedChildIndex.value == index;
+                              final isRegistered = controller.isChildRegistered(apprenant);
+                              
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: index < controller.apprenants.length - 1 ? 20 : 0,
+                                ),
+                                child: GestureDetector(
+                                    onTap: () => controller.toggleChild(index),
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.grey.shade300),
+                                        color: Colors.white,
                                       ),
-                                      const SizedBox(width: 10),
-                                      Column(
+                                      child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            controller.children[0]['name'],
-                                            style: const TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          Text(
-                                            controller.children[0]['status'],
-                                            style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                        const SizedBox(height: 20),
-
-                        /// --- SECOND CHILD (Expandable Card) ---
-                        if (controller.children.length > 1)
-                          Obx(
-                            () => GestureDetector(
-                              onTap: () => controller.toggleChild(1),
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey.shade300),
-                                  color: Colors.white,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          width: 50,
-                                          height: 50,
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade200,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Image.asset(
-                                            controller.children[1]['avatar'],
-                                            fit: BoxFit.contain,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              controller.children[1]['name'],
-                                              style: const TextStyle(
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.check_circle,
-                                                  color: SC_ThemeColors.normalGreen,
-                                                  size: 18,
+                                          Row(
+                                            children: [
+                                              Container(
+                                                width: 50,
+                                                height: 50,
+                                                padding: const EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.grey.shade200,
+                                                  shape: BoxShape.circle,
                                                 ),
-                                                const SizedBox(width: 4),
+                                                child: Image.asset(
+                                                  controller.getChildAvatar(index),
+                                                  fit: BoxFit.contain,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      apprenant.fullName,
+                                                      style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        if (isRegistered) ...[
+                                                          Icon(
+                                                            Icons.check_circle,
+                                                            color: SC_ThemeColors.normalGreen,
+                                                            size: 18,
+                                                          ),
+                                                          const SizedBox(width: 4),
+                                                        ],
+                                                        Flexible(
+                                                          child: Text(
+                                                            controller.getChildStatus(apprenant),
+                                                            style: const TextStyle(
+                                                              color: Colors.grey,
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    if (apprenant.niveauScolaire != null)
+                                                      Text(
+                                                        'Niveau: ${apprenant.niveauScolaire}',
+                                                        style: const TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 13,
+                                                        ),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+
+                                          // Informations détaillées quand développé
+                                          if (isExpanded && isRegistered) ...[
+                                            const SizedBox(height: 15),
+                                            const Divider(),
+                                            const SizedBox(height: 10),
+
+                                            // TODO: Récupérer les vraies données depuis l'API
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                const Text(
+                                                  'Résultat récent :',
+                                                  style: TextStyle(fontSize: 16),
+                                                ),
                                                 Text(
-                                                  controller.children[1]['status'],
+                                                  '13/20',  // Placeholder
                                                   style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 14,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            const SizedBox(height: 10),
+
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                                const Text(
+                                                  'Devoir à rendre',
+                                                  style: TextStyle(fontSize: 16),
+                                                ),
+                                                Text(
+                                                  'Oui',  // Placeholder
+                                                  style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ],
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-
-                                    if (controller.selectedChildIndex.value == 1) ...[
-                                      const SizedBox(height: 15),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                            'Résultat récent :',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          Text(
-                                            controller.children[1]['recentScore'],
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      const SizedBox(height: 10),
-
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          const Text(
-                                            'Devoir à rendre',
-                                            style: TextStyle(fontSize: 16),
-                                          ),
-                                          Text(
-                                            controller.children[1]['hasHomework'] ? 'Oui' : 'Non',
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ],
+                                  ),
+                              );
+                            },
+                          )
+                        else
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 40),
+                              child: Text(
+                                'Aucun apprenant',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ),

@@ -1,8 +1,11 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:scai_tutor_mobile/app/data/models/user.dart';
 
 /// Service global pour gérer l'état de l'utilisateur connecté
 class UserService extends GetxService {
+  final GetStorage _storage = GetStorage();
+
   // Utilisateur actuel (observable)
   final Rx<User?> currentUser = Rx<User?>(null);
 
@@ -14,6 +17,8 @@ class UserService extends GetxService {
   String? get userEmail => currentUser.value?.email;
   String? get userImageUrl => currentUser.value?.imageUrl;
   String? get userId => currentUser.value?.id;
+  String? get token => _storage.read('token');
+  String? get userType => _storage.read('user_type');
 
   /// Méthode d'initialisation du service
   @override
@@ -23,40 +28,50 @@ class UserService extends GetxService {
   }
 
   /// Charger l'utilisateur depuis le stockage local
-  /// TODO: Implémenter avec GetStorage
   Future<void> _loadUserFromStorage() async {
-    // Exemple avec GetStorage:
-    // final storage = GetStorage();
-    // final userData = storage.read('user');
-    // if (userData != null) {
-    //   currentUser.value = User.fromJson(userData);
-    // }
-    
-    print('UserService: Chargement utilisateur depuis le stockage...');
+    try {
+      final userData = _storage.read('user');
+      if (userData != null) {
+        currentUser.value = User.fromJson(Map<String, dynamic>.from(userData));
+        print('UserService: Utilisateur chargé - ${currentUser.value?.name}');
+      }
+    } catch (e) {
+      print('UserService: Erreur lors du chargement - $e');
+    }
   }
 
   /// Définir l'utilisateur connecté
-  void setUser(User user) {
+  void setUser(User user, {String? token, String? userType}) {
     currentUser.value = user;
-    _saveUserToStorage(user);
+    _saveUserToStorage(user, token: token, userType: userType);
     print('UserService: Utilisateur défini - ${user.name} (${user.role})');
   }
 
   /// Mettre à jour les informations de l'utilisateur
   void updateUser(User user) {
     currentUser.value = user;
-    _saveUserToStorage(user);
+    _storage.write('user', user.toJson());
     print('UserService: Utilisateur mis à jour - ${user.name}');
   }
 
   /// Sauvegarder l'utilisateur dans le stockage local
-  /// TODO: Implémenter avec GetStorage
-  Future<void> _saveUserToStorage(User user) async {
-    // Exemple avec GetStorage:
-    // final storage = GetStorage();
-    // await storage.write('user', user.toJson());
-    
-    print('UserService: Sauvegarde utilisateur dans le stockage...');
+  Future<void> _saveUserToStorage(
+    User user, {
+    String? token,
+    String? userType,
+  }) async {
+    try {
+      await _storage.write('user', user.toJson());
+      if (token != null) {
+        await _storage.write('token', token);
+      }
+      if (userType != null) {
+        await _storage.write('user_type', userType);
+      }
+      print('UserService: Utilisateur sauvegardé avec succès');
+    } catch (e) {
+      print('UserService: Erreur lors de la sauvegarde - $e');
+    }
   }
 
   /// Déconnecter l'utilisateur
@@ -67,14 +82,15 @@ class UserService extends GetxService {
   }
 
   /// Effacer l'utilisateur du stockage local
-  /// TODO: Implémenter avec GetStorage
   Future<void> _clearUserFromStorage() async {
-    // Exemple avec GetStorage:
-    // final storage = GetStorage();
-    // await storage.remove('user');
-    // await storage.remove('token');
-    
-    print('UserService: Effacement utilisateur du stockage...');
+    try {
+      await _storage.remove('user');
+      await _storage.remove('token');
+      await _storage.remove('user_type');
+      print('UserService: Stockage effacé avec succès');
+    } catch (e) {
+      print('UserService: Erreur lors de l\'effacement - $e');
+    }
   }
 
   /// Vérifier si l'utilisateur a un rôle spécifique

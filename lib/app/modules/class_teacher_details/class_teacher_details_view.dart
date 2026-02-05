@@ -118,97 +118,100 @@ class ClassTeacherDetailsView extends GetView<ClassTeacherDetailsController> {
 
               /// --- SCROLLABLE CONTENT ---
               Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 25),
+                child: RefreshIndicator(
+                  onRefresh: controller.fetchEvaluations,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 25),
 
-                    const SizedBox(height: 25),
+                        const SizedBox(height: 25),
 
-                    /// --- NOUVEL EXERCICE / RECHERCHE ---
-                    const Text(
-                      "Nouvel Exercice / Recherche",
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    Obx(
-                      () => Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: SC_ThemeColors.darkBlue,
-                            width: 1.3,
-                          ),
-                          color: Colors.white,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: controller.newExercises.map((exercise) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: Text(
-                                exercise,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    /// --- ENVOYÉS HEADER ---
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          "Envoyés",
+                        /// --- NOUVEL EXERCICE / RECHERCHE ---
+                        const Text(
+                          "Nouvel Exercice / Recherche",
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        Text(
-                          "16 Avril",
-                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        const SizedBox(height: 12),
+
+                        Obx(
+                          () => Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: SC_ThemeColors.darkBlue,
+                                width: 1.3,
+                              ),
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: controller.newExercises.map((exercise) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Text(
+                                    exercise.titre,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                         ),
+
+                        const SizedBox(height: 30),
+
+                        /// --- ENVOYÉS HEADER ---
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text(
+                              "Envoyés",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              "16 Avril",
+                              style: TextStyle(fontSize: 14, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        /// --- EXERCISE CARDS ---
+                        Obx(
+                          () => Column(
+                            children: controller.sentExercises.asMap().entries.map((entry) {
+                              final exercise = entry.value;
+                              
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: _ExerciseCard(
+                                  title: exercise.titre,
+                                  imagePath: 'assets/images/bg1.png',
+                                  onTap: () => controller.openExercise(exercise),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+
+                        const SizedBox(height: 30),
                       ],
                     ),
-
-                    const SizedBox(height: 20),
-
-                    /// --- EXERCISE CARDS ---
-                    Obx(
-                      () => Column(
-                        children: controller.sentExercises.asMap().entries.map((entry) {
-                          int index = entry.key;
-                          Map<String, dynamic> exercise = entry.value;
-                          
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: _ExerciseCard(
-                              title: exercise['title'],
-                              imagePath: exercise['imagePath'],
-                              onTap: () => controller.openExercise(index),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-                    ],
                   ),
                 ),
               ),

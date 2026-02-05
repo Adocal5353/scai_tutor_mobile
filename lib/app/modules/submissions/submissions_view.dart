@@ -56,28 +56,32 @@ class SubmissionsView extends GetView<SubmissionsController> {
 
                 // Contenu scrollable
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-                    child: Obx(
-                      () => Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...controller.submissions.asMap().entries.map((entry) {
-                            int index = entry.key;
-                            Map<String, dynamic> submission = entry.value;
-                            
-                            return Column(
-                              children: [
-                                _buildClasseSection(
-                                  submission['niveau'],
-                                  submission['devoirs'],
-                                ),
-                                if (index < controller.submissions.length - 1)
-                                  const SizedBox(height: 25),
-                              ],
-                            );
-                          }).toList(),
-                        ],
+                  child: RefreshIndicator(
+                    onRefresh: controller.fetchSubmissions,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                      child: Obx(
+                        () => Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ...controller.submissions.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              Map<String, dynamic> submission = entry.value;
+                              
+                              return Column(
+                                children: [
+                                  _buildClasseSection(
+                                    submission['niveau'],
+                                    submission['devoirs'],
+                                  ),
+                                  if (index < controller.submissions.length - 1)
+                                    const SizedBox(height: 25),
+                                ],
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       ),
                     ),
                   ),

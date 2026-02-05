@@ -94,42 +94,46 @@ class RessourcesTeacherView extends GetView<RessourcesTeacherController> {
   Widget _buildDocumentsTab() {
     final groupedDocs = controller.getGroupedDocuments();
     
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 4),
-          // Afficher les documents groupés par date
-          ...groupedDocs.entries.map((entry) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  entry.key,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontSize: 18,
+    return RefreshIndicator(
+      onRefresh: controller.fetchDocuments,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 4),
+            // Afficher les documents groupés par date
+            ...groupedDocs.entries.map((entry) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    entry.key,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                ...entry.value.map((doc) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: _buildDocumentCard(
-                    icon: doc['icon'] as IconData,
-                    iconColor: doc['iconColor'] as Color,
-                    title: doc['title'] as String,
-                    type: doc['type'] as String,
-                  ),
-                )),
-                const SizedBox(height: 8),
-              ],
-            );
-          }),
-        ],
+                  const SizedBox(height: 8),
+                  ...entry.value.map((doc) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _buildDocumentCard(
+                      icon: doc['icon'] as IconData,
+                      iconColor: doc['iconColor'] as Color,
+                      title: doc['title'] as String,
+                      type: doc['type'] as String,
+                    ),
+                  )),
+                  const SizedBox(height: 8),
+                ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -197,42 +201,46 @@ class RessourcesTeacherView extends GetView<RessourcesTeacherController> {
   Widget _buildVideosTab() {
     final groupedVideos = controller.getGroupedVideos();
     
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 4),
-          // Afficher les vidéos groupées par date
-          ...groupedVideos.entries.map((entry) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  entry.key,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontSize: 18,
+    return RefreshIndicator(
+      onRefresh: controller.fetchDocuments,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 4),
+            // Afficher les vidéos groupées par date
+            ...groupedVideos.entries.map((entry) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    entry.key,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                ...entry.value.map((video) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildVideoCard(
-                    title: video['title'] as String,
-                    thumbnail: video['thumbnail'] as String,
-                    duration: video['duration'] as String,
-                    watched: video['watched'] as bool,
-                  ),
-                )),
-                const SizedBox(height: 10),
-              ],
-            );
-          }),
-        ],
+                  const SizedBox(height: 8),
+                  ...entry.value.map((video) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildVideoCard(
+                      title: video['title'] as String,
+                      thumbnail: video['thumbnail'] as String,
+                      duration: video['duration'] as String,
+                      watched: video['watched'] as bool,
+                    ),
+                  )),
+                  const SizedBox(height: 10),
+                ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

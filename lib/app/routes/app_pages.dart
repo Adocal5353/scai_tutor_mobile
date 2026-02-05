@@ -18,8 +18,14 @@ import '../modules/class_student/class_student_binding.dart';
 import '../modules/class_student/class_student_view.dart';
 import '../modules/class_student_details/class_student_details_binding.dart';
 import '../modules/class_student_details/class_student_details_view.dart';
+import '../modules/class_students_list/class_students_list_binding.dart';
+import '../modules/class_students_list/class_students_list_view.dart';
 import '../modules/class_teacher/class_teacher_binding.dart';
 import '../modules/class_teacher/class_teacher_view.dart';
+import '../modules/create_quiz/create_quiz_binding.dart';
+import '../modules/create_quiz/create_quiz_view.dart';
+import '../modules/upload_document/upload_document_binding.dart';
+import '../modules/upload_document/upload_document_view.dart';
 import '../modules/class_teacher_details/class_teacher_details_binding.dart';
 import '../modules/class_teacher_details/class_teacher_details_view.dart';
 import '../modules/class_teacher_details_see_more/class_teacher_details_see_more_binding.dart';
@@ -30,10 +36,24 @@ import '../modules/dashboard_teacher/dashboard_teacher_binding.dart';
 import '../modules/dashboard_teacher/dashboard_teacher_view.dart';
 import '../modules/general_evaluation/general_evaluation_binding.dart';
 import '../modules/general_evaluation/general_evaluation_view.dart';
+import '../modules/subject_evaluation/subject_evaluation_binding.dart';
+import '../modules/subject_evaluation/subject_evaluation_view.dart';
+import '../modules/edit_profile/edit_profile_binding.dart';
+import '../modules/edit_profile/edit_profile_view.dart';
 import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
 import '../modules/landing/landing_binding.dart';
 import '../modules/landing/landing_view.dart';
+import '../modules/library_student/library_student_binding.dart';
+import '../modules/library_student/library_student_view.dart';
+import '../modules/learning_student/learning_student_binding.dart';
+import '../modules/learning_student/learning_student_view.dart';
+import '../modules/learning_subject_detail/learning_subject_detail_binding.dart';
+import '../modules/learning_subject_detail/learning_subject_detail_view.dart';
+import '../modules/pro_offer/pro_offer_binding.dart';
+import '../modules/pro_offer/pro_offer_view.dart';
+import '../modules/competence_test/competence_test_binding.dart';
+import '../modules/competence_test/competence_test_view.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/login/login_view.dart';
 import '../modules/parent_guardian/parent_guardian_binding.dart';
@@ -163,6 +183,21 @@ class AppPages {
       binding: ClassChatBinding(),
     ),
     GetPage(
+      name: _Paths.CLASS_STUDENTS_LIST,
+      page: () => const ClassStudentsListView(),
+      binding: ClassStudentsListBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_QUIZ,
+      page: () => const CreateQuizView(),
+      binding: CreateQuizBinding(),
+    ),
+    GetPage(
+      name: _Paths.UPLOAD_DOCUMENT,
+      page: () => const UploadDocumentView(),
+      binding: UploadDocumentBinding(),
+    ),
+    GetPage(
       name: _Paths.PARENT_GUARDIAN,
       page: () => const ParentGuardianView(),
       binding: ParentGuardianBinding(),
@@ -176,6 +211,41 @@ class AppPages {
       name: _Paths.GENERAL_EVALUATION,
       page: () => const GeneralEvaluationView(),
       binding: GeneralEvaluationBinding(),
+    ),
+    GetPage(
+      name: _Paths.SUBJECT_EVALUATION,
+      page: () => const SubjectEvaluationView(),
+      binding: SubjectEvaluationBinding(),
+    ),
+    GetPage(
+      name: _Paths.EDIT_PROFILE,
+      page: () => const EditProfileView(),
+      binding: EditProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.LIBRARY_STUDENT,
+      page: () => const LibraryStudentView(),
+      binding: LibraryStudentBinding(),
+    ),
+    GetPage(
+      name: _Paths.LEARNING_STUDENT,
+      page: () => const LearningStudentView(),
+      binding: LearningStudentBinding(),
+    ),
+    GetPage(
+      name: _Paths.LEARNING_SUBJECT_DETAIL,
+      page: () => const LearningSubjectDetailView(),
+      binding: LearningSubjectDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRO_OFFER,
+      page: () => const ProOfferView(),
+      binding: ProOfferBinding(),
+    ),
+    GetPage(
+      name: _Paths.COMPETENCE_TEST,
+      page: () => const CompetenceTestView(),
+      binding: CompetenceTestBinding(),
     ),
   ];
 }

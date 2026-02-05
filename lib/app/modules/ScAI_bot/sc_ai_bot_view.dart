@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:gpt_markdown/gpt_markdown.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'sc_ai_bot_controller.dart';
-import 'package:scai_tutor_mobile/app/data/models/Message.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ScsAIBotView extends GetView<ScsAIBotController> {
   const ScsAIBotView({super.key});

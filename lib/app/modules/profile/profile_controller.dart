@@ -1,11 +1,13 @@
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/data/models/user.dart';
 import 'package:scai_tutor_mobile/app/data/services/user_service.dart';
-import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
+import 'package:scai_tutor_mobile/app/data/services/auth_service.dart';
+import '../../routes/app_pages.dart';
 
 class ProfileController extends GetxController {
-  // Injection du UserService
+  // Injection des services
   final UserService _userService = Get.find<UserService>();
+  final AuthService _authService = Get.find<AuthService>();
 
   // Getters pour accéder facilement aux infos utilisateur
   User? get currentUser => _userService.user;
@@ -40,6 +42,8 @@ class ProfileController extends GetxController {
         return 'Enseignant(e)';
       case 'parent':
         return 'Parent';
+      case 'responsable':
+        return 'Responsable';
       default:
         return 'Rôle inconnu';
     }
@@ -47,30 +51,15 @@ class ProfileController extends GetxController {
 
   /// Navigation vers la page de modification du profil
   void goToEditProfile() {
-    // TODO: Créer la page d'édition de profil
-    Get.snackbar(
-      'Info',
-      'Page de modification du profil à implémenter',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.toNamed(Routes.EDIT_PROFILE);
   }
 
   /// Navigation vers les classes selon le rôle
   void goToClasses() {
     if (_userService.isTeacher) {
-      // Naviguer vers les classes de l'enseignant
-      Get.snackbar(
-        'Navigation',
-        'Redirection vers vos classes',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.toNamed(Routes.CLASS_TEACHER);
     } else if (_userService.isLearner) {
-      // Naviguer vers les classes de l'apprenant
-      Get.snackbar(
-        'Navigation',
-        'Redirection vers vos cours',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.toNamed(Routes.CLASS_STUDENT);
     } else {
       Get.snackbar(
         'Info',
@@ -89,9 +78,8 @@ class ProfileController extends GetxController {
       textCancel: 'Non',
       confirmTextColor: Get.theme.colorScheme.onPrimary,
       onConfirm: () async {
-        await _userService.logout();
         Get.back(); // Fermer le dialog
-        Get.offAllNamed(Routes.LOGIN); // Rediriger vers login
+        await _authService.logout(); // Utiliser AuthService pour la déconnexion
         Get.snackbar(
           'Déconnexion',
           'Vous avez été déconnecté avec succès',

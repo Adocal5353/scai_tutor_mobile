@@ -1,13 +1,19 @@
 import 'package:get/get.dart';
+import 'package:scai_tutor_mobile/app/data/models/apprenant_model.dart';
+import 'package:scai_tutor_mobile/app/data/providers/api_provider.dart';
 
 class HouseholdController extends GetxController {
-  final children = <Map<String, dynamic>>[].obs;
+  final apprenants = <ApprenantModel>[].obs;
   final selectedChildIndex = Rxn<int>();
+  final isLoading = false.obs;
+
+  late final ApiProvider _apiProvider;
 
   @override
   void onInit() {
     super.onInit();
-    _loadChildren();
+    _apiProvider = Get.find<ApiProvider>();
+    _loadApprenants();
   }
 
   @override
@@ -20,22 +26,48 @@ class HouseholdController extends GetxController {
     super.onClose();
   }
 
-  void _loadChildren() {
-    children.value = [
-      {
-        'name': 'Juliette AFANVI',
-        'status': 'Récemment inscrite',
-        'avatar': 'assets/icons/justine.png',
-        'isRegistered': false,
-      },
-      {
-        'name': 'Joseph AFANVI',
-        'status': 'Inscrit et à jour',
-        'avatar': 'assets/icons/justin.png',
-        'isRegistered': true,
-        'recentScore': '13/20',
-        'hasHomework': true,
-      },
+  Future<void> _loadApprenants() async {
+    try {
+      isLoading.value = true;
+      
+      // Récupérer les apprenants du parent connecté
+      final response = await _apiProvider.get('/apprenants');
+      
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        apprenants.value = data.map((json) => ApprenantModel.fromJson(json)).toList();
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Erreur',
+        'Impossible de charger les apprenants: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      // Données de démonstration en cas d'erreur
+      _loadDemoData();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void _loadDemoData() {
+    apprenants.value = [
+      ApprenantModel(
+        id: '1',
+        nom: 'AFANVI',
+        prenom: 'Juliette',
+        email: 'juliette@example.com',
+        niveauScolaire: '6ème',
+        origineCreation: 'invitation',
+      ),
+      ApprenantModel(
+        id: '2',
+        nom: 'AFANVI',
+        prenom: 'Joseph',
+        email: 'joseph@example.com',
+        niveauScolaire: '5ème',
+        origineCreation: 'directe',
+      ),
     ];
   }
 
@@ -57,5 +89,22 @@ class HouseholdController extends GetxController {
     } else {
       selectedChildIndex.value = index;
     }
+  }
+
+  String getChildAvatar(int index) {
+    // Alternance entre icônes masculin/féminin
+    return index % 2 == 0 ? 'assets/icons/justine.png' : 'assets/icons/justin.png';
+  }
+
+  String getChildStatus(ApprenantModel apprenant) {
+    if (apprenant.origineCreation == 'invitation') {
+      return 'Récemment inscrit';
+    } else {
+      return 'Inscrit et à jour';
+    }
+  }
+
+  bool isChildRegistered(ApprenantModel apprenant) {
+    return apprenant.origineCreation == 'directe';
   }
 }

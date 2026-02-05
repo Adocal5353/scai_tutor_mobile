@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:scai_tutor_mobile/app/global_widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
-import '../../routes/app_pages.dart';
 
 class DashboardStudentContentView extends StatelessWidget {
   const DashboardStudentContentView({super.key});
@@ -38,16 +37,26 @@ class DashboardStudentContentView extends StatelessWidget {
               // Section Librairie & Apprentissage
               Row(
                 children: [
-                  _buildMainCard(
-                    title: 'Librairie',
-                    icon: Icons.library_books,
-                    color: SC_ThemeColors.darkBlue,
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/library-student');
+                    },
+                    child: _buildMainCard(
+                      title: 'Librairie',
+                      icon: Icons.library_books,
+                      color: SC_ThemeColors.darkBlue,
+                    ),
                   ),
                   const SizedBox(width: 40),
-                  _buildMainCard(
-                    title: 'Apprentissage',
-                    icon: Icons.school,
-                    color: SC_ThemeColors.darkBlue,
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/learning-student');
+                    },
+                    child: _buildMainCard(
+                      title: 'Apprentissage',
+                      icon: Icons.school,
+                      color: SC_ThemeColors.darkBlue,
+                    ),
                   ),
                 ],
               ),
@@ -64,11 +73,26 @@ class DashboardStudentContentView extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    _buildEvaluationCard('Evaluation en Mathematiques'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Mathematiques'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en Mathematiques'),
+                    ),
                     const SizedBox(width: 18),
-                    _buildEvaluationCard('Evaluation en physique'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Physique'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en physique'),
+                    ),
                     const SizedBox(width: 18),
-                    _buildEvaluationCard('Evaluation en chimie'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Chimie'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en chimie'),
+                    ),
                   ],
                 ),
               ),
@@ -174,7 +198,7 @@ class DashboardStudentContentView extends StatelessWidget {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Icon(icon, size: 50, color: color),
+              Icon(icon, size: 70, color: color),
               const SizedBox(height: 5),
               Text(
                 title,

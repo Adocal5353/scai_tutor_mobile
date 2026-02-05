@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scai_tutor_mobile/app/modules/signup/time_on_screen_view.dart';
 import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
 
 import 'signup_controller.dart';
@@ -42,45 +41,66 @@ class SignupView extends GetView<SignupController> {
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Center(
-                                child: const Text(
-                                  'Choisir un profil',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
+                          child: Form(
+                            key: controller.formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: const Text(
+                                    'Choisir un profil',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
+                                const SizedBox(height: 20),
 
-                              // Boutons de profil
-                              Obx(
-                                () => Row(
-                                  children: profileOptions.map((option) {
-                                    return _buildProfileButton(
-                                      icon: option['icon'],
-                                      label: option['label'],
-                                      value: option['value'],
-                                      isSelected:
-                                          controller.selectedProfile.value ==
-                                          option['value'],
-                                    );
-                                  }).toList(),
+                                // Boutons de profil
+                                Obx(
+                                  () => Row(
+                                    children: profileOptions.map((option) {
+                                      return _buildProfileButton(
+                                        icon: option['icon'],
+                                        label: option['label'],
+                                        value: option['value'],
+                                        isSelected:
+                                            controller.selectedProfile.value ==
+                                            option['value'],
+                                      );
+                                    }).toList(),
+                                  ),
                                 ),
-                              ),
 
-                              // Ajoutez ici vos autres champs de formulaire...
-                              const SizedBox(height: 20),
-                              _buildInputField(label: 'Nom et prénom(s)'),
-                              const SizedBox(height: 16),
-                              _buildInputField(
-                                label: 'Email',
-                                keyboardType: TextInputType.emailAddress,
-                              ),
-                              const SizedBox(height: 16),
+                                // Ajoutez ici vos autres champs de formulaire...
+                                const SizedBox(height: 20),
+                                _buildInputField(
+                                  label: 'Nom et prénom(s)',
+                                  controller: controller.nameController,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Veuillez entrer votre nom complet';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                _buildInputField(
+                                  label: 'Email',
+                                  controller: controller.emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Veuillez entrer votre email';
+                                    }
+                                    if (!GetUtils.isEmail(value)) {
+                                      return 'Email invalide';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 16),
                               
                               // Dropdown Niveau (conditionnel selon profil)
                               Obx(() {
@@ -121,17 +141,19 @@ class SignupView extends GetView<SignupController> {
                               
                               _buildInputField(
                                 label: "Etablissement",
+                                controller: controller.etablissementController,
                                 keyboardType: TextInputType.text,
                               ),
                               const SizedBox(height: 16),
                               
-                              // Champ Téléphone (uniquement pour apprenant)
+                              // Champ Téléphone
                               Obx(() {
-                                if (controller.selectedProfile.value == 'learner') {
+                                if (controller.selectedProfile.value != '') {
                                   return Column(
                                     children: [
                                       _buildInputField(
                                         label: "Téléphone",
+                                        controller: controller.telephoneController,
                                         keyboardType: TextInputType.phone,
                                       ),
                                       const SizedBox(height: 16),
@@ -143,12 +165,36 @@ class SignupView extends GetView<SignupController> {
                               
                               _buildInputField(
                                 label: 'Mot de passe',
+                                controller: controller.passwordController,
                                 isPassword: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Veuillez entrer un mot de passe';
+                                  }
+                                  // Minimum 8 caractères pour enseignant, 6 pour les autres
+                                  final minLength = controller.selectedProfile.value == 'teacher' ? 8 : 6;
+                                  if (value.length < minLength) {
+                                    return controller.selectedProfile.value == 'teacher' 
+                                      ? 'Le mot de passe doit contenir au moins 8 caractères'
+                                      : 'Le mot de passe doit contenir au moins 6 caractères';
+                                  }
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 16),
                               _buildInputField(
                                 label: 'Confirmer le mot de passe',
+                                controller: controller.confirmPasswordController,
                                 isPassword: true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Veuillez confirmer le mot de passe';
+                                  }
+                                  if (value != controller.passwordController.text) {
+                                    return 'Les mots de passe ne correspondent pas';
+                                  }
+                                  return null;
+                                },
                               ),
                               const SizedBox(height: 16),
 
@@ -167,10 +213,10 @@ class SignupView extends GetView<SignupController> {
                               const SizedBox(height: 16),
 
                               // Bouton Créer un compte
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.to(TimeOnScreenView());
-                                },
+                              Obx(() => ElevatedButton(
+                                onPressed: controller.isLoading.value
+                                    ? null
+                                    : controller.createAccount,
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
@@ -182,15 +228,27 @@ class SignupView extends GetView<SignupController> {
                                     1,
                                   ),
                                   minimumSize: const Size(double.infinity, 50),
+                                  disabledBackgroundColor: Colors.grey,
                                 ),
-                                child: const Text(
-                                  'Suivant',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
+                                child: controller.isLoading.value
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Créer un compte',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              )),
                               const SizedBox(height: 16),
 
                               // Lien de connexion
@@ -215,7 +273,8 @@ class SignupView extends GetView<SignupController> {
                                   ),
                                 ),
                               ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -316,12 +375,16 @@ class SignupView extends GetView<SignupController> {
 
   Widget _buildInputField({
     required String label,
+    TextEditingController? controller,
     bool isPassword = false,
     TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
+      controller: controller,
       obscureText: isPassword,
       keyboardType: keyboardType,
+      validator: validator,
       decoration: InputDecoration(
         labelText: label,
         border: const OutlineInputBorder(

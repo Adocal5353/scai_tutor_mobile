@@ -9,6 +9,8 @@ class DashboardTeacherContentView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<DashboardTeacherController>();
+    
     return Scaffold(
       body: Stack(
         children: [
@@ -107,22 +109,22 @@ class DashboardTeacherContentView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Bienvenu M. Antoine",
-                                style: TextStyle(
+                              Obx(() => Text(
+                                controller.userName,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
+                              )),
                               const SizedBox(height: 2),
-                              Text(
-                                "Mathématiques _ Collège",
+                              Obx(() => Text(
+                                controller.specialiteNiveau,
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.9),
                                   fontSize: 13,
                                 ),
-                              ),
+                              )),
                             ],
                           ),
                         ),
@@ -370,7 +372,9 @@ class DashboardTeacherContentView extends StatelessWidget {
           final controller = Get.find<DashboardTeacherController>();
           controller.changeTab(2);
         } else if (title == "Gérer mes élèves") {
-          Get.toNamed(Routes.CLASS_CHAT);
+          // Changer vers l'onglet Classes du BottomNavigationBar (index 1)
+          final controller = Get.find<DashboardTeacherController>();
+          controller.changeTab(1);
         } else {
           Get.snackbar(
             'Info',

@@ -56,7 +56,11 @@ class ClassOverviewView extends GetView<ClassOverviewController> {
 
                 // Contenu scrollable unique
                 Expanded(
-                  child: _buildPage(),
+                  child: Obx(
+                    () => controller.isLoading.value
+                        ? const Center(child: CircularProgressIndicator())
+                        : _buildPage(),
+                  ),
                 ),
               ],
             ),
@@ -68,31 +72,35 @@ class ClassOverviewView extends GetView<ClassOverviewController> {
 
   /// ---------- PAGE ----------
   Widget _buildPage() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-      child: Obx(
-        () => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ...controller.classes.asMap().entries.map((entry) {
-              int index = entry.key;
-              Map<String, dynamic> classe = entry.value;
-              
-              return Column(
-                children: [
-                  _buildClasseSection(
-                    classe['niveau'],
-                    classe['evolution'],
-                  ),
-                  if (index < controller.classes.length - 1) ...[
-                    const SizedBox(height: 30),
-                    _buildSeparator(),
-                    const SizedBox(height: 20),
+    return RefreshIndicator(
+      onRefresh: controller.fetchClassPanorama,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+        child: Obx(
+          () => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ...controller.classes.asMap().entries.map((entry) {
+                int index = entry.key;
+                Map<String, dynamic> classe = entry.value;
+                
+                return Column(
+                  children: [
+                    _buildClasseSection(
+                      classe['niveau'],
+                      classe['evolution'],
+                    ),
+                    if (index < controller.classes.length - 1) ...[
+                      const SizedBox(height: 30),
+                      _buildSeparator(),
+                      const SizedBox(height: 20),
+                    ],
                   ],
-                ],
-              );
-            }).toList(),
-          ],
+                );
+              }).toList(),
+            ],
+          ),
         ),
       ),
     );

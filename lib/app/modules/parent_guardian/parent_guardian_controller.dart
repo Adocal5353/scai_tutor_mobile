@@ -1,10 +1,21 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/routes/app_pages.dart';
 
 class ParentGuardianController extends GetxController {
+  var currentIndex = 0.obs;
+  
+  // Les pages seront définies depuis la vue pour éviter la dépendance circulaire
+  List<Widget> pages = <Widget>[];
+
+  void changeTab(int index) {
+    currentIndex.value = index;
+  }
+
   @override
   void onInit() {
     super.onInit();
+    currentIndex.value = 0;
   }
 
   @override
@@ -18,7 +29,7 @@ class ParentGuardianController extends GetxController {
   }
 
   void goToFoyer() {
-    Get.toNamed(Routes.HOUSEHOLD);
+    changeTab(1);
   }
 
   void goToScAIBot() {
