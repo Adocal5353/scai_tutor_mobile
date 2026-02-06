@@ -37,30 +37,119 @@ class UploadDocumentView extends GetView<UploadDocumentController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Message d'information
+                    // Section de Sélection de Fichier
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: SC_ThemeColors.lightBlue.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: SC_ThemeColors.darkBlue.withOpacity(0.3),
+                          color: SC_ThemeColors.darkBlue.withOpacity(0.2),
                         ),
                       ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.info_outline, 
-                            color: Color(0xFF104BBF), 
-                            size: 20,
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Note : Cette version enregistre les métadonnées du document. Le fichier sera ajouté ultérieurement.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.black87,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Fichier',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
                               ),
+                              const Text(
+                                'Optionnel',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Obx(() {
+                            final file = controller.selectedFile.value;
+                            if (file != null) {
+                              return Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: SC_ThemeColors.lightBlue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: SC_ThemeColors.darkBlue.withOpacity(0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.insert_drive_file,
+                                      color: SC_ThemeColors.darkBlue,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            file.name,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            controller.formatFileSize(file.size),
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close, color: Colors.red),
+                                      onPressed: controller.removeSelectedFile,
+                                      padding: EdgeInsets.zero,
+                                      constraints: const BoxConstraints(),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return OutlinedButton.icon(
+                                onPressed: controller.pickFile,
+                                icon: const Icon(Icons.attach_file),
+                                label: const Text('Sélectionner un fichier'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: SC_ThemeColors.darkBlue,
+                                  side: BorderSide(color: SC_ThemeColors.darkBlue.withOpacity(0.5)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
+                              );
+                            }
+                          }),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Formats acceptés : PDF, Word, Excel, PowerPoint, images, etc. (max 20 Mo)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
                             ),
                           ),
                         ],

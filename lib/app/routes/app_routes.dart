@@ -29,6 +29,7 @@ abstract class Routes {
   static const CLASS_STUDENTS_LIST = _Paths.CLASS_STUDENTS_LIST;
   static const CREATE_QUIZ = _Paths.CREATE_QUIZ;
   static const UPLOAD_DOCUMENT = _Paths.UPLOAD_DOCUMENT;
+  static const UPLOAD_VIDEO = _Paths.UPLOAD_VIDEO;
   static const PARENT_GUARDIAN = _Paths.PARENT_GUARDIAN;
   static const HOUSEHOLD = _Paths.HOUSEHOLD;
   static const GENERAL_EVALUATION = _Paths.GENERAL_EVALUATION;
@@ -39,6 +40,8 @@ abstract class Routes {
   static const LEARNING_SUBJECT_DETAIL = _Paths.LEARNING_SUBJECT_DETAIL;
   static const PRO_OFFER = _Paths.PRO_OFFER;
   static const COMPETENCE_TEST = _Paths.COMPETENCE_TEST;
+  static const STUDENT_QUIZ = _Paths.STUDENT_QUIZ;
+  static const QUIZ_DETAIL = _Paths.QUIZ_DETAIL;
 }
 
 abstract class _Paths {
@@ -68,6 +71,7 @@ abstract class _Paths {
   static const CLASS_STUDENTS_LIST = '/class-students-list';
   static const CREATE_QUIZ = '/create-quiz';
   static const UPLOAD_DOCUMENT = '/upload-document';
+  static const UPLOAD_VIDEO = '/upload-video';
   static const PARENT_GUARDIAN = '/parent-guardian';
   static const HOUSEHOLD = '/household';
   static const GENERAL_EVALUATION = '/general-evaluation';
@@ -78,4 +82,6 @@ abstract class _Paths {
   static const LEARNING_SUBJECT_DETAIL = '/learning-subject-detail';
   static const PRO_OFFER = '/pro-offer';
   static const COMPETENCE_TEST = '/competence-test';
+  static const STUDENT_QUIZ = '/student-quiz';
+  static const QUIZ_DETAIL = '/quiz-detail';
 }

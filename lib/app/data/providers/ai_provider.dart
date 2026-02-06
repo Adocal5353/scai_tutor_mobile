@@ -32,4 +32,23 @@ class AiProvider {
       ),
     );
   }
+
+  // POST /api/ai/generate-quiz
+  // Génère un quiz automatiquement avec l'IA
+  Future<Response> generateQuiz({
+    required String matiere,
+    required String chapitres,
+    required int nombreQuestions,
+    String? niveauDifficulte,
+  }) async {
+    return await _apiProvider.post(
+      '/ai/generate-quiz',
+      data: {
+        'matiere': matiere,
+        'chapitres': chapitres,
+        'nombre_questions': nombreQuestions,
+        if (niveauDifficulte != null) 'niveau': niveauDifficulte,
+      },
+    );
+  }
 }

@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/data/models/matiere_model.dart';
+import 'package:scai_tutor_mobile/app/data/models/quiz_model.dart';
 import 'package:scai_tutor_mobile/app/data/providers/evaluation_provider.dart';
 import 'package:scai_tutor_mobile/app/data/providers/matiere_provider.dart';
+import 'package:scai_tutor_mobile/app/data/providers/quiz_provider.dart';
+import 'package:scai_tutor_mobile/app/data/providers/ai_provider.dart';
 import 'package:scai_tutor_mobile/app/data/services/user_service.dart';
 import 'package:intl/intl.dart';
 
 class CreateQuizController extends GetxController {
   final EvaluationProvider _evaluationProvider = Get.find<EvaluationProvider>();
   final MatiereProvider _matiereProvider = Get.find<MatiereProvider>();
+  final QuizProvider _quizProvider = Get.find<QuizProvider>();
+  final AiProvider _aiProvider = Get.find<AiProvider>();
   final UserService _userService = Get.find<UserService>();
 
   final TextEditingController titreController = TextEditingController();
   final TextEditingController chapitresController = TextEditingController();
+  final TextEditingController nombreQuestionsController = TextEditingController(text: '10');
 
   final RxList<MatiereModel> matieres = <MatiereModel>[].obs;
   final Rxn<MatiereModel> selectedMatiere = Rxn<MatiereModel>();
@@ -20,6 +26,9 @@ class CreateQuizController extends GetxController {
   
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMatieres = false.obs;
+  final RxBool useAI = false.obs; // Toggle pour génération IA
+  final RxString selectedDifficulty = 'moyen'.obs; // facile, moyen, difficile
+  final RxList<QuestionModel> generatedQuestions = <QuestionModel>[].obs;
   final RxString error = ''.obs;
 
   @override
@@ -184,8 +193,112 @@ class CreateQuizController extends GetxController {
     }
   }
 
+  Future<void> generateQuizWithAI() async {
+    if (!_validateFormForAI()) {
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+      error.value = '';
+      generatedQuestions.clear();
+
+      print('[CreateQuiz] Generating quiz with AI...');
+      
+      final nombreQuestions = int.tryParse(nombreQuestionsController.text.trim()) ?? 10;
+
+      final response = await _aiProvider.generateQuiz(
+        matiere: selectedMatiere.value!.nomMatiere,
+        chapitres: chapitresController.text.trim(),
+        nombreQuestions: nombreQuestions,
+        niveauDifficulte: selectedDifficulty.value,
+      );
+
+      print('[CreateQuiz] AI Response: ${response.data}');
+
+      if (response.data != null) {
+        // Parse les questions générées par l'IA
+        final data = response.data;
+        
+        if (data['questions'] != null) {
+          final questions = (data['questions'] as List)
+              .map((q) => QuestionModel.fromJson(q))
+              .toList();
+          
+          generatedQuestions.value = questions;
+          
+          print('[CreateQuiz] Generated ${generatedQuestions.length} questions');
+          
+          Get.snackbar(
+            'Succès',
+            '${generatedQuestions.length} questions générées par l\'IA',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color(0xFF228A25),
+            colorText: Colors.white,
+          );
+        } else {
+          throw Exception('Aucune question générée');
+        }
+      }
+    } catch (e) {
+      error.value = e.toString();
+      print('[CreateQuiz] Error generating with AI: $e');
+      Get.snackbar(
+        'Erreur',
+        'Impossible de générer le quiz avec l\'IA: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  bool _validateFormForAI() {
+    if (selectedMatiere.value == null) {
+      Get.snackbar(
+        'Validation',
+        'Veuillez sélectionner une matière',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    }
+
+    if (chapitresController.text.trim().isEmpty) {
+      Get.snackbar(
+        'Validation',
+        'Veuillez saisir les chapitres concernés',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    }
+
+    final nombreQuestions = int.tryParse(nombreQuestionsController.text.trim());
+    if (nombreQuestions == null || nombreQuestions < 1 || nombreQuestions > 50) {
+      Get.snackbar(
+        'Validation',
+        'Le nombre de questions doit être entre 1 et 50',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   Future<void> createQuiz() async {
     if (!_validateForm()) {
+      return;
+    }
+
+    // Si mode IA et pas de questions générées, on génère d'abord
+    if (useAI.value && generatedQuestions.isEmpty) {
+      Get.snackbar(
+        'Information',
+        'Veuillez d\'abord générer les questions avec l\'IA',
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return;
     }
 
@@ -205,17 +318,38 @@ class CreateQuizController extends GetxController {
 
       final dateCreation = DateFormat('yyyy-MM-ddTHH:mm:ss').format(selectedDate.value!);
 
-      final data = {
-        'titre': titreController.text.trim(),
-        'date_creation': dateCreation,
-        'chapitres_concernes': chapitresController.text.trim(),
-        'id_enseignant': userId,
-        'id_matiere': selectedMatiere.value!.id,
-      };
+      // Si mode IA, utiliser le QuizProvider avec les questions générées
+      if (useAI.value && generatedQuestions.isNotEmpty) {
+        final quizData = {
+          'titre': titreController.text.trim(),
+          'matiere': selectedMatiere.value!.nomMatiere,
+          'chapitres_concernes': chapitresController.text.trim(),
+          'date_creation': dateCreation,
+          'date_limite': dateCreation,
+          'id_enseignant': userId,
+          'id_matiere': selectedMatiere.value!.id,
+          'questions': generatedQuestions.map((q) => q.toJson()).toList(),
+          'duree_minutes': 60,
+          'note_maximale': generatedQuestions.fold(0, (sum, q) => sum + (q.points ?? 1)),
+        };
 
-      print('[CreateQuiz] Creating quiz with data: $data');
+        print('[CreateQuiz] Creating AI-generated quiz with ${generatedQuestions.length} questions');
+        
+        await _quizProvider.create(quizData);
+      } else {
+        // Mode manuel - utiliser l'ancien système d'évaluation
+        final data = {
+          'titre': titreController.text.trim(),
+          'date_creation': dateCreation,
+          'chapitres_concernes': chapitresController.text.trim(),
+          'id_enseignant': userId,
+          'id_matiere': selectedMatiere.value!.id,
+        };
 
-      await _evaluationProvider.create(data);
+        print('[CreateQuiz] Creating manual quiz with data: $data');
+
+        await _evaluationProvider.create(data);
+      }
 
       print('[CreateQuiz] Quiz created successfully');
       

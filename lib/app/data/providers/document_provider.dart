@@ -16,8 +16,17 @@ class DocumentProvider {
     return await _apiProvider.get('/documents/$id');
   }
 
-  // POST /api/documents
-  Future<Response> create(Map<String, dynamic> data) async {
+  // POST /api/documents - Support JSON et FormData
+  Future<Response> create(dynamic data) async {
+    // Si data est FormData, définir le content type approprié
+    if (data is FormData) {
+      return await _apiProvider.post(
+        '/documents',
+        data: data,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+    }
+    // Sinon utiliser JSON classique
     return await _apiProvider.post('/documents', data: data);
   }
 

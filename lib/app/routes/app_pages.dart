@@ -26,6 +26,8 @@ import '../modules/create_quiz/create_quiz_binding.dart';
 import '../modules/create_quiz/create_quiz_view.dart';
 import '../modules/upload_document/upload_document_binding.dart';
 import '../modules/upload_document/upload_document_view.dart';
+import '../modules/upload_video/upload_video_binding.dart';
+import '../modules/upload_video/upload_video_view.dart';
 import '../modules/class_teacher_details/class_teacher_details_binding.dart';
 import '../modules/class_teacher_details/class_teacher_details_view.dart';
 import '../modules/class_teacher_details_see_more/class_teacher_details_see_more_binding.dart';
@@ -54,6 +56,10 @@ import '../modules/pro_offer/pro_offer_binding.dart';
 import '../modules/pro_offer/pro_offer_view.dart';
 import '../modules/competence_test/competence_test_binding.dart';
 import '../modules/competence_test/competence_test_view.dart';
+import '../modules/student_quiz/student_quiz_binding.dart';
+import '../modules/student_quiz/student_quiz_view.dart';
+import '../modules/quiz_detail/quiz_detail_binding.dart';
+import '../modules/quiz_detail/quiz_detail_view.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/login/login_view.dart';
 import '../modules/parent_guardian/parent_guardian_binding.dart';
@@ -198,6 +204,11 @@ class AppPages {
       binding: UploadDocumentBinding(),
     ),
     GetPage(
+      name: _Paths.UPLOAD_VIDEO,
+      page: () => const UploadVideoView(),
+      binding: UploadVideoBinding(),
+    ),
+    GetPage(
       name: _Paths.PARENT_GUARDIAN,
       page: () => const ParentGuardianView(),
       binding: ParentGuardianBinding(),
@@ -246,6 +257,16 @@ class AppPages {
       name: _Paths.COMPETENCE_TEST,
       page: () => const CompetenceTestView(),
       binding: CompetenceTestBinding(),
+    ),
+    GetPage(
+      name: _Paths.STUDENT_QUIZ,
+      page: () => const StudentQuizView(),
+      binding: StudentQuizBinding(),
+    ),
+    GetPage(
+      name: _Paths.QUIZ_DETAIL,
+      page: () => const QuizDetailView(),
+      binding: QuizDetailBinding(),
     ),
   ];
 }

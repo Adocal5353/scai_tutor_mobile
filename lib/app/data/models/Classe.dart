@@ -47,9 +47,9 @@ class Classe {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'subject': subject,
-      'level': level,
+      'id_classe': id,
+      'nom_classe': subject,
+      'niveau_scolaire': level,
       'teacher': teacher.toJson(),
       'students': students.map((student) => student.toJson()).toList(),
       'assignments': assignments
@@ -61,7 +61,7 @@ class Classe {
   // Conversion vers le format API
   Map<String, dynamic> toApiJson() {
     return {
-      '_id': id,
+      'id_classe': id,
       'nom_classe': subject,
       'niveau_scolaire': level,
       'id_enseignant': teacher.id,
