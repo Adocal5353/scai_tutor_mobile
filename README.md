@@ -7,4 +7,4 @@ Pour faire fonctionner ce projet, creez un fichier .env dans lequel vous copiere
 
 Ensuite, il suffit de fournir la bonne clé ```HF_TOKEN``` et le tour est joué.
 
-Lancez alors le projet en connectant votre appareil mobile ou votre émulateur android.h
+Lancez alors le projet en connectant votre appareil mobile ou votre émulateur android.
