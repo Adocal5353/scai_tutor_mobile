@@ -37,6 +37,47 @@ class CreateQuizView extends GetView<CreateQuizController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Option génération IA
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: SC_ThemeColors.darkBlue.withOpacity(0.2),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.auto_awesome,
+                            color: SC_ThemeColors.darkBlue,
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text(
+                              'Générer avec l\'IA',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Obx(() => Switch(
+                            value: controller.useAI.value,
+                            onChanged: (value) {
+                              controller.useAI.value = value;
+                              if (!value) {
+                                controller.generatedQuestions.clear();
+                              }
+                            },
+                            activeColor: SC_ThemeColors.darkBlue,
+                          )),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
                     // Titre
                     const Text(
                       'Titre du Quiz',
@@ -169,6 +210,139 @@ class CreateQuizView extends GetView<CreateQuizController> {
                     ),
 
                     const SizedBox(height: 20),
+
+                    // Options IA (si activée)
+                    Obx(() => controller.useAI.value
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Nombre de questions
+                              const Text(
+                                'Nombre de Questions',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: controller.nombreQuestionsController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  hintText: '10',
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Niveau de difficulté
+                              const Text(
+                                'Niveau de Difficulté',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Obx(() => DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    value: controller.selectedDifficulty.value,
+                                    items: const [
+                                      DropdownMenuItem(
+                                        value: 'facile',
+                                        child: Text('Facile'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'moyen',
+                                        child: Text('Moyen'),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: 'difficile',
+                                        child: Text('Difficile'),
+                                      ),
+                                    ],
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        controller.selectedDifficulty.value = value;
+                                      }
+                                    },
+                                  ),
+                                )),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Bouton générer avec IA
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: controller.isLoading.value
+                                      ? null
+                                      : controller.generateQuizWithAI,
+                                  icon: const Icon(Icons.auto_awesome),
+                                  label: const Text('Générer les Questions'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: SC_ThemeColors.darkBlue,
+                                    disabledBackgroundColor: Colors.grey,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(vertical: 15),
+                                  ),
+                                ),
+                              ),
+
+                              // Afficher les questions générées
+                              Obx(() => controller.generatedQuestions.isNotEmpty
+                                  ? Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 16),
+                                        Container(
+                                          padding: const EdgeInsets.all(16),
+                                          decoration: BoxDecoration(
+                                            color: SC_ThemeColors.lightBlue,
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.check_circle, color: Colors.green),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
+                                                  '${controller.generatedQuestions.length} questions générées avec succès',
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : const SizedBox.shrink()),
+                              const SizedBox(height: 20),
+                            ],
+                          )
+                        : const SizedBox.shrink()),
 
                     // Date limite
                     const Text(

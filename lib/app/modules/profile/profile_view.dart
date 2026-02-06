@@ -165,6 +165,90 @@ class ProfileView extends GetView<ProfileController> {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            // Upload video button (only for teachers)
+            if (controller.userRole == 'Enseignant(e)')
+              ElevatedButton(
+                onPressed: () {
+                  Get.toNamed('/upload-video')?.then((result) {
+                    if (result == true) {
+                      Get.snackbar(
+                        'Succès',
+                        'Vidéo uploadée avec succès',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFF228A25),
+                        colorText: Colors.white,
+                      );
+                    }
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: SC_ThemeColors.lightBlueBg,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.video_library, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text(
+                          'Charger une vidéo',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Icon(Icons.arrow_forward_ios, color: Colors.black),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 16),
+            // Upload document button (only for students)
+            if (controller.userRole == 'Apprenant(e)')
+              ElevatedButton(
+                onPressed: () {
+                  Get.toNamed('/upload-document')?.then((result) {
+                    if (result == true) {
+                      Get.snackbar(
+                        'Succès',
+                        'Document uploadé avec succès',
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFF228A25),
+                        colorText: Colors.white,
+                      );
+                    }
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: SC_ThemeColors.lightBlueBg,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.upload_file, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text(
+                          'Charger un document',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Icon(Icons.arrow_forward_ios, color: Colors.black),
+                  ],
+                ),
+              ),
                       ],
                     ),
                   )),

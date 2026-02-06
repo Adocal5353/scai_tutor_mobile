@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:scai_tutor_mobile/app/data/providers/api_provider.dart';
 import 'package:scai_tutor_mobile/app/data/repositories/invitation_repository.dart';
 import 'package:scai_tutor_mobile/app/data/repositories/apprenant_repository.dart';
 

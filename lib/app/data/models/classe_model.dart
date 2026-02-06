@@ -15,10 +15,10 @@ class ClasseModel {
 
   factory ClasseModel.fromJson(Map<String, dynamic> json) {
     return ClasseModel(
-      id: json['_id'] ?? json['id'],
+      id: json['id_classe']?.toString() ?? json['_id']?.toString() ?? json['id']?.toString(),
       nomClasse: json['nom_classe'] ?? '',
       niveauScolaire: json['niveau_scolaire'],
-      idEnseignant: json['id_enseignant'],
+      idEnseignant: json['id_enseignant']?.toString(),
       apprenantsIds: json['apprenants_ids'] != null
           ? List<String>.from(json['apprenants_ids'])
           : null,

@@ -53,7 +53,28 @@ class ClasseRepository {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return ClasseModel.fromJson(response.data);
       } else if (response.statusCode == 204) {
-        // Succès sans données retournées, on retourne l'objet original
+        // Succès sans données retournées par le backend
+        // Récupérer la liste des classes pour trouver celle qui vient d'être créée
+        try {
+          final listResponse = await _classeProvider.getAll(
+            params: {'id_enseignant': classe.idEnseignant},
+          );
+          
+          if (listResponse.statusCode == 200) {
+            final List data = listResponse.data;
+            // Chercher la classe avec le même nom (dernière créée)
+            final createdClasse = data.lastWhere(
+              (json) => json['nom_classe'] == classe.nomClasse,
+              orElse: () => null,
+            );
+            
+            if (createdClasse != null) {
+              return ClasseModel.fromJson(createdClasse);
+            }
+          }
+        } catch (_) {
+          // Si la récupération échoue, retourner l'objet original
+        }
         return classe;
       } else {
         throw ApiException(

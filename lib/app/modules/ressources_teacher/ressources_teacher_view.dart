@@ -43,16 +43,47 @@ class RessourcesTeacherView extends GetView<RessourcesTeacherController> {
                       ),
                     ),
                     const Spacer(),
-                    IconButton(
+                    PopupMenuButton<String>(
                       icon: const Icon(Icons.arrow_upward,
                           color: Colors.black, size: 30),
-                      onPressed: () {
-                        Get.snackbar(
-                          'Exportation',
-                          'Fonctionnalité d\'exportation à implémenter',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
+                      tooltip: 'Exporter une ressource',
+                      onSelected: (value) {
+                        if (value == 'document') {
+                          Get.toNamed('/upload-document')?.then((result) {
+                            if (result == true) {
+                              controller.fetchDocuments();
+                            }
+                          });
+                        } else if (value == 'video') {
+                          Get.toNamed('/upload-video')?.then((result) {
+                            if (result == true) {
+                              controller.fetchDocuments();
+                            }
+                          });
+                        }
                       },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem<String>(
+                          value: 'document',
+                          child: Row(
+                            children: [
+                              Icon(Icons.insert_drive_file, color: Colors.blue),
+                              SizedBox(width: 12),
+                              Text('Charger un document'),
+                            ],
+                          ),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'video',
+                          child: Row(
+                            children: [
+                              Icon(Icons.video_library, color: Colors.green),
+                              SizedBox(width: 12),
+                              Text('Charger une vidéo'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
