@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_pages.dart';
+import '../../data/services/user_service.dart';
+import '../../data/services/auth_service.dart';
+import '../../data/providers/api_provider.dart';
 
 class LoginController extends GetxController {
+  // Injection des services
+  final UserService _userService = Get.find<UserService>();
+  final AuthService _authService = Get.find<AuthService>();
+
   // Text Controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -11,25 +18,6 @@ class LoginController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool obscurePassword = true.obs;
   final RxString errorMessage = ''.obs;
-
-  // Faux utilisateurs pour test 
-  final Map<String, Map<String, dynamic>> _fakeUsers = {
-    'apprenant@test.com': {
-      'password': '123456',
-      'role': 'learner',
-      'name': 'Rodrigue Apprenant',
-    },
-    'enseignant@test.com': {
-      'password': '123456',
-      'role': 'teacher',
-      'name': 'Caleb Enseignant',
-    },
-    'parent@test.com': {
-      'password': '123456',
-      'role': 'parent',
-      'name': 'Junipr Parent',
-    },
-  };
 
   void togglePasswordVisibility() {
     obscurePassword.value = !obscurePassword.value;
@@ -85,78 +73,38 @@ class LoginController extends GetxController {
     errorMessage.value = '';
 
     try {
-      // Simulation d'appel API 
-      final result = await _fakeApiLogin(
-        emailController.text.trim(),
-        passwordController.text,
+      // Appel à l'API réelle via AuthService
+      final success = await _authService.login(
+        email: emailController.text.trim(),
+        password: passwordController.text,
       );
 
-      if (result['success']) {
-        // Stocker les informations utilisateur 
-        _saveUserData(result['user']);
-
+      if (success) {
         // Message de succès
         Get.snackbar(
           'Succès',
-          'Bienvenue ${result['user']['name']} !',
+          'Bienvenue ${_userService.userName} !',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
           duration: Duration(seconds: 2),
         );
 
-        // Navigation selon le rôle (décommenter et adapter selon vos routes)
+        // Navigation selon le rôle
         await Future.delayed(Duration(milliseconds: 500));
-        _navigateByRole(result['user']['role']);
-        
-      } else {
-        _showErrorSnackbar(result['message']);
+        _navigateByRole(_userService.userRole ?? 'learner');
       }
+    } on ApiException catch (e) {
+      _showErrorSnackbar(e.message);
     } catch (e) {
       _showErrorSnackbar('Une erreur est survenue. Veuillez réessayer.');
       print('Erreur de connexion: $e');
     } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /// Simulation d'appel API 
-  Future<Map<String, dynamic>> _fakeApiLogin(String email, String password) async {
-    // Simulation de délai réseau
-    await Future.delayed(Duration(seconds: 2));
-
-    // Vérification des identifiants 
-    if (_fakeUsers.containsKey(email)) {
-      if (_fakeUsers[email]!['password'] == password) {
-        return {
-          'success': true,
-          'user': {
-            'email': email,
-            'name': _fakeUsers[email]!['name'],
-            'role': _fakeUsers[email]!['role'],
-            'token': 'fake_jwt_token_${DateTime.now().millisecondsSinceEpoch}',
-          },
-        };
-      } else {
-        return {
-          'success': false,
-          'message': 'Mot de passe incorrect',
-        };
+      // Vérifier que le controller n'a pas été disposé avant de modifier les observables
+      if (!isClosed) {
+        isLoading.value = false;
       }
     }
-
-    return {
-      'success': false,
-      'message': 'Aucun compte trouvé avec cet email',
-    };
-  }
-
-  /// Sauvegarder les données utilisateur 
-  void _saveUserData(Map<String, dynamic> user) {
-    // TODO: Utiliser GetStorage, SharedPreferences ou autre pour sauvegarder
-    // Exemple: GetStorage().write('user', user);
-    // Exemple: GetStorage().write('token', user['token']);
-    print('Utilisateur connecté: ${user['name']} (${user['role']})');
   }
 
   /// Navigation selon le rôle utilisateur
@@ -166,12 +114,13 @@ class LoginController extends GetxController {
         Get.offAllNamed(Routes.DASHBOARD_STUDENT);
         break;
       case 'teacher':
-        // Get.offAllNamed(Routes.DASHBOARD_TEACHER);
-        Get.snackbar('Info', 'Navigation vers Dashboard Enseignant');
+        Get.offAllNamed(Routes.DASHBOARD_TEACHER);
         break;
       case 'parent':
-        // Get.offAllNamed(Routes.DASHBOARD_PARENT);
-        Get.snackbar('Info', 'Navigation vers Dashboard Parent');
+        Get.offAllNamed(Routes.PARENT_GUARDIAN);
+        break;
+      case 'responsable':
+        Get.offAllNamed(Routes.PARENT_GUARDIAN); // Ou créer une route spécifique
         break;
       default:
         Get.snackbar('Erreur', 'Rôle utilisateur non reconnu');
@@ -236,6 +185,9 @@ class LoginController extends GetxController {
 
   /// Afficher un snackbar d'erreur
   void _showErrorSnackbar(String message) {
+    // Ne pas afficher de snackbar si le controller est déjà disposé
+    if (isClosed) return;
+    
     Get.snackbar(
       'Erreur',
       message,

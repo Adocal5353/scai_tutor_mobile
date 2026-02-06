@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scai_tutor_mobile/app/global_widgets/header_logo.dart';
-import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
 import 'dashboard_student_controller.dart';
 
 class DashboardStudentView extends GetView<DashboardStudentController> {

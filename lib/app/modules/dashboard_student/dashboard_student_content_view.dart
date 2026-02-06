@@ -37,16 +37,26 @@ class DashboardStudentContentView extends StatelessWidget {
               // Section Librairie & Apprentissage
               Row(
                 children: [
-                  _buildMainCard(
-                    title: 'Librairie',
-                    icon: Icons.library_books,
-                    color: SC_ThemeColors.darkBlue,
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/library-student');
+                    },
+                    child: _buildMainCard(
+                      title: 'Librairie',
+                      icon: Icons.library_books,
+                      color: SC_ThemeColors.darkBlue,
+                    ),
                   ),
                   const SizedBox(width: 40),
-                  _buildMainCard(
-                    title: 'Apprentissage',
-                    icon: Icons.school,
-                    color: SC_ThemeColors.darkBlue,
+                  GestureDetector(
+                    onTap: () {
+                      Get.toNamed('/learning-student');
+                    },
+                    child: _buildMainCard(
+                      title: 'Apprentissage',
+                      icon: Icons.school,
+                      color: SC_ThemeColors.darkBlue,
+                    ),
                   ),
                 ],
               ),
@@ -63,35 +73,55 @@ class DashboardStudentContentView extends StatelessWidget {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    _buildEvaluationCard('Evaluation en Mathematiques'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Mathematiques'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en Mathematiques'),
+                    ),
                     const SizedBox(width: 18),
-                    _buildEvaluationCard('Evaluation en physique'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Physique'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en physique'),
+                    ),
                     const SizedBox(width: 18),
-                    _buildEvaluationCard('Evaluation en chimie'),
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed('/subject-evaluation', arguments: {'subject': 'Chimie'});
+                      },
+                      child: _buildEvaluationCard('Evaluation en chimie'),
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: SC_ThemeColors.lightBlue,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Evaluation générale",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  Get.toNamed('/general-evaluation');
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: SC_ThemeColors.lightBlue,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Evaluation générale",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Icon(Icons.arrow_forward),
-                  ],
+                      SizedBox(width: 10),
+                      Icon(Icons.arrow_forward),
+                    ],
+                  ),
                 ),
               ),
               // Section Évaluation Générale
@@ -168,7 +198,7 @@ class DashboardStudentContentView extends StatelessWidget {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Icon(icon, size: 50, color: color),
+              Icon(icon, size: 70, color: color),
               const SizedBox(height: 5),
               Text(
                 title,

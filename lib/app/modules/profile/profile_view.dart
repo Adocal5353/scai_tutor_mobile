@@ -2,122 +2,178 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/theme/theme_colors.dart';
 import 'profile_controller.dart';
-import 'package:scai_tutor_mobile/app/global_widgets/header_logo.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
+  
   @override
   Widget build(BuildContext context) {
-    return GetBuilder(
-      init: ProfileController(),
-      builder: (ProfileController controller) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: HeaderLogo(),
-            centerTitle: true,
-            backgroundColor: Colors.white,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.menu, color: Colors.black),
-                onPressed: () {
-                  // Handle menu icon press
-                },
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background image pour toute la page
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/Ellipse_image.png"),
+                fit: BoxFit.cover,
               ),
-            ],
+            ),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Profile header with image and name
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+          // Contenu principal
+          Column(
+            children: [
+              // AppBar avec fond blanc
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 50, left: 20, right: 20, bottom: 20),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                        controller.user.value.imageUrl.isNotEmpty
-                            ? controller.user.value.imageUrl
-                            : 'https://www.pngall.com/wp-content/uploads/5/Profile-PNG-High-Quality-Image.png',
-                      ), // Placeholder image, replace with actual URL
+                    Container(
+                      height: 35,
+                      width: 80,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Image.asset(
+                        'assets/images/app_logo.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          controller.user.value.name ?? 'Nom Inconnu',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: null,
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll<Color>(
-                              Color(0xFF2E7D32),
-                            ),
-                            foregroundColor: MaterialStatePropertyAll<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                          child: Text(
-                            controller.user.value.role ?? 'Rôle inconnu',
-                          ),
-                        ),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.logout, color: Colors.black),
+                      onPressed: controller.logout,
+                      tooltip: 'Déconnexion',
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
-                // Profile modification button
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFB3E5FC),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Modifier le profil',
-                        style: TextStyle(color: Colors.black),
+              ),
+              // Corps avec fond semi-transparent
+              Expanded(
+                child: Container(
+                  color: Colors.white.withOpacity(0.95),
+                  child: Obx(() => Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Profile header with image and name
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.white,
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/icons/utilisateur.png',
+                                  width: 90,
+                                  height: 90,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  controller.userName,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                    Text(
+                      controller.userEmail,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
                       ),
-                      Icon(Icons.arrow_forward_ios, color: Colors.black),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Classes button
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFB3E5FC),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Mes classes',
-                        style: TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: null,
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all<Color>(
+                          SC_ThemeColors.normalGreen,
+                        ),
+                        foregroundColor: WidgetStateProperty.all<Color>(
+                          Colors.white,
+                        ),
                       ),
-                      Icon(Icons.arrow_forward_ios, color: Colors.black),
-                    ],
-                  ),
+                      child: Text(
+                        controller.userRole,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
+            const SizedBox(height: 24),
+            // Profile modification button
+            ElevatedButton(
+              onPressed: controller.goToEditProfile,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SC_ThemeColors.lightBlueBg,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Modifier le profil',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, color: Colors.black),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Classes button
+            ElevatedButton(
+              onPressed: controller.goToClasses,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: SC_ThemeColors.lightBlueBg,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Mes classes',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, color: Colors.black),
+                ],
+              ),
+            ),
+                      ],
+                    ),
+                  )),
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

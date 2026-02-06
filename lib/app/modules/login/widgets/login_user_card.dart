@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginUserCard extends StatelessWidget {
-  IconData icon;
-  String userType;
+  final IconData icon;
+  final String userType;
 
   LoginUserCard({super.key, required this.icon, required this.userType});
   @override

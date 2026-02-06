@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scai_tutor_mobile/app/modules/class_student/class_student_view.dart';
 import 'package:scai_tutor_mobile/app/modules/dashboard_student/dashboard_student_content_view.dart';
-import 'package:scai_tutor_mobile/app/modules/dashboard_student/dashboard_student_view.dart';
 import 'package:scai_tutor_mobile/app/modules/profile/profile_view.dart';
 import 'package:scai_tutor_mobile/app/modules/ressources_student/ressources_student_view.dart';
 

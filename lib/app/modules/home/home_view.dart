@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
-
+import 'package:scai_tutor_mobile/app/global_widgets/header_logo.dart';
 import 'home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -9,9 +8,12 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('HomeView'),
+        automaticallyImplyLeading: false,
+        title: const HeaderLogo(),
         centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: const Center(
         child: Text(
